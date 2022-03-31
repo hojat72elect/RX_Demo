@@ -63,8 +63,8 @@ There's also another function in some cases of Observers 👇👇
 Between an Observable and Observer, we can
 have <a href="http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava3/core/Scheduler.html">Schedulers</a> which help
 us to handle multithreading in a nice way. Scheduler decides whether a particular part of code should run on the
-MainThread or on a separate one. There are numerous schedulers available in RxJava but **Schedulers.io()** and **
-AndroidSchedulers.mainThread()** are the most common schedulers used in Android world.
+MainThread or on a separate one. There are numerous schedulers available in RxJava but **Schedulers.io()** and
+**AndroidSchedulers.mainThread()** are the most common schedulers used in Android world.
 
 ----------------------------------
 
@@ -131,3 +131,37 @@ scripts (If the latest versions are different from what comes here, the IDE itse
     // RxAndroid:
     implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
 ```
+
+----------------------------------
+
+### Concurrency and multithreading with Schedulers
+
+One of the best advantages of Rxjava is its ability to easily schedule works and process result on various threads which
+allows us to heavily optimize system performance
+
+**Scheduler:**
+RxJava solution for handling multithreading. You can imagine a Scheduler as a thread pool which manages one or more
+threads.<br/> Whenever a Scheduler needs to execute a task, it will take out a thread from its pool and run the task on
+that thread.
+
+There are various types of Schedulers available in RxJava.
+<ol>
+<li>Schedulers.io()</li>
+This scheduler can have a limitless thread pool. It's best suited for non CPU intensive tasks; such as database interactions, network communications, and local file system interactions.
+<li>AndroidSchedulers.mainThread()</li>
+The main thread for all the UI interactions in Android and where all the user interactions happen. Remember that this scheduler is provided by RxAndroid and not RxJava.
+</ol>
+
+**In the Android world, 90% of times we only use the 2 schedulers above.**
+
+These are Some other Schedulers you have access to in RxJava:
+<ol>
+<li><b>Schedulers.newThread()</b></li>
+This Scheduler creates a new thread for each unit of the work that has been scheduled. 
+<li><b>Schedulers.single()</b></li>
+This Scheduler has only a single thread which executes tasks one after another according to their order. 
+<li><b>Schedulers.trampoline()</b></li>
+This Scheduler executes all the given tasks in a first in first out (FIFO) fashion. This scheduler fits well for implementing recurring tasks. 
+<li>Schedulers.from(Executor executor)</li>
+This function creates and returns a customized Scheduler backed by a specific <a href="https://developer.android.com/reference/java/util/concurrent/Executor">executor</a>.
+</ol>
