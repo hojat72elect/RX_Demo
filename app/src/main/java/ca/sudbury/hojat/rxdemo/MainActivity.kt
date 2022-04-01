@@ -6,8 +6,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Observer
-import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.observers.DisposableObserver
 import io.reactivex.rxjava3.schedulers.Schedulers
 
 
@@ -16,10 +15,12 @@ class MainActivity : AppCompatActivity() {
     private val TAG = "RxJavaDemo"
     private val greeting = "Hello From RxJava" // imagine this is a data stream
     private lateinit var myObservable: Observable<String> // The Observable object
-    private lateinit var myObserver: Observer<String> // The Observer object
+
+    //    private lateinit var myObserver: Observer<String> // The Observer object
+    private lateinit var myObserver: DisposableObserver<String> // It's a customized version of Observer which makes some works easier.
 
     private lateinit var textView: TextView
-    private lateinit var disposable: Disposable
+//    private lateinit var disposable: Disposable
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,47 +43,67 @@ class MainActivity : AppCompatActivity() {
         /*
         * According to the code line above, this data stream will move to main thread again; so we can use that data for UI operations. */
 
-        myObserver = object : Observer<String> { // An object that complies to Observer interface.
+//        myObserver = object : Observer<String> { // An object that complies to Observer interface.
+//
+//            /**
+//             * onSubscribe() function gets called when the Observer firstly subscribes to the Observable.
+//             * Pay attention that there's an object of type "Disposable" in this callback function.
+//             */
+//            override fun onSubscribe(d: Disposable) {
+//                Log.i(TAG, "onSubscribe() function was invoked")
+//
+//
+//                disposable = d
+//            }
+//
+//            /**
+//             * onNext() function gets called whenever the observable emits
+//             * new data (which is of type string in this case)
+//             */
+//            override fun onNext(t: String) {
+//                Log.i(TAG, "onNext() function was invoked")
+//                textView.text = t
+//            }
+//
+//            /**
+//             * If any errors occurred in the data emission process, this
+//             * function will be called (and you will get a reference to the
+//             * cause of that error).
+//             */
+//            override fun onError(e: Throwable) {
+//                Log.i(TAG, "onError() function was invoked")
+//            }
+//
+//            /**
+//             * After all the data emissions are finished, this function will
+//             * be called.
+//             */
+//            override fun onComplete() {
+//                Log.i(TAG, "onComplete() function was invoked")
+//            }
+//
+//        }
+        // the Observer should specifically subscribe to an observer before any of our implementation works.
 
-            /**
-             * onSubscribe() function gets called when the Observer firstly subscribes to the Observable.
-             * Pay attention that there's an object of type "Disposable" in this callback function.
-             */
-            override fun onSubscribe(d: Disposable) {
-                Log.i(TAG, "onSubscribe() function was invoked")
-
-
-                disposable = d
-            }
-
-            /**
-             * onNext() function gets called whenever the observable emits
-             * new data (which is of type string in this case)
-             */
+        /*
+        * In this case, Instead of working with Observer<T> interface we're
+        * working DisposableObserver<String> which is an abstract class.
+        * Pay attention that in this case, we don't have an onSubscribe()
+        * between our callbacks (it's because a DisposableObserver doesn't need that).*/
+        myObserver = object : DisposableObserver<String>() {
             override fun onNext(t: String) {
                 Log.i(TAG, "onNext() function was invoked")
                 textView.text = t
             }
 
-            /**
-             * If any errors occurred in the data emission process, this
-             * function will be called (and you will get a reference to the
-             * cause of that error).
-             */
             override fun onError(e: Throwable) {
                 Log.i(TAG, "onError() function was invoked")
             }
 
-            /**
-             * After all the data emissions are finished, this function will
-             * be called.
-             */
             override fun onComplete() {
                 Log.i(TAG, "onComplete() function was invoked")
             }
-
         }
-        // the Observer should specifically subscribe to an observer before any of our implementation works.
 
         myObservable.subscribe(myObserver)
 
@@ -93,6 +114,10 @@ class MainActivity : AppCompatActivity() {
         /*
         * When an Activity or Fragment is destroyed by the system, its "onDestroy()" method callback will be invoked.
         * And that's the best place for removing the subscription between Observer and Observable.*/
-        disposable.dispose()
+
+//        disposable.dispose()
+
+        // You can directly dispose a DisposableObserver<T> which is totally different from a normal Observer.
+        myObserver.dispose()
     }
 }

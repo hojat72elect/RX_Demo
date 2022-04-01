@@ -195,7 +195,9 @@ to listen to the Observable.
 
 ### Disposable Observer:
 
-
+For normal Observers we use the Interface "Observer<T>" but for custom Observers we can also use a class
+named "<a href="http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava3/observers/DisposableObserver.html">
+DisposableObserver<T></a>".
 
 
 ----------------------------------
