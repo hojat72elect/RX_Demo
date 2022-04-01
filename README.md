@@ -207,6 +207,40 @@ CompositeDisposable</a> class.
 
 ----------------------------------
 
+### Suggestions for concise and efficient coding in RxJava:
+
+<ul>
+<li><b>Rather than writing different code lines for each one of Schedulers, you can just subscribe and add the Observer to the disposables.</b></li><br/>
+For Example, imagine that you want to add a few Schedulers to an Observable and then subscribe an Observer to that Observable; and finally add that whole structure to a disposable, so you can dispose it in future.<br/>
+A naive way of doing that is this:
+
+```
+// Registering the Schedulers:
+myObservable.subscribeOn(Schedulers.io())
+myObservable.observeOn(AndroidSchedulers.mainThread())
+
+// Subscribing Observer to Observable
+myObservable.subscribe(myObserver)
+
+// making sure the observer will be disposed later on
+compositeDisposable.add(myObserver)
+```
+
+Instead of doing the verbose and long option above, you can do all of those operations in just one line of code:
+
+```
+ compositeDisposable.add(
+            myObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(myObserver)
+        )
+```
+
+</ul>
+
+----------------------------------
+
 ### Further reading:
 
 In creating this project I have used these resources:

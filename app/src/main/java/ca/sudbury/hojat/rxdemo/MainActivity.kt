@@ -39,13 +39,13 @@ class MainActivity : AppCompatActivity() {
         myObservable = Observable.just(greeting)
 
         //We'll put our schedulers and operators in between of Observable and Observer (just like how the architecture shows it in README.md)
-        myObservable.subscribeOn(Schedulers.io()) // choosing the Scheduler
+//        myObservable.subscribeOn(Schedulers.io()) // choosing the Scheduler
         /*
         * According to the line code above, from this point onwards,
         *  the data stream will be executed on the io thread. Observer
         *  will receive data through the io thread.   */
 
-        myObservable.observeOn(AndroidSchedulers.mainThread())
+//        myObservable.observeOn(AndroidSchedulers.mainThread())
         /*
         * According to the code line above, this data stream will move to main thread again; so we can use that data for UI operations. */
 
@@ -113,10 +113,24 @@ class MainActivity : AppCompatActivity() {
 
 
         // Adding (subscribing) an Observer to a CompositeDisposable class.
-        compositeDisposable.add(myObserver)
+//        compositeDisposable.add(myObserver)
 
-        myObservable.subscribe(myObserver)
+//        myObservable.subscribe(myObserver)
 
+        /*
+        * by chaining multiple function calls together, we have added 2
+        * Schedulers to our Observable and then subscribed an Observer to
+        * it. The method "subscribeWith()" returns an object of type
+        * Observer, and in this case, since "myObserver" is a
+        * DisposableObserver, the result of all of this line will be a
+        * DisposableObserver which we pass to compositeDisposable.add()
+        * function. */
+        compositeDisposable.add(
+            myObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(myObserver)
+        )// so now our CompositeDisposable has a disposable  full-blown observer
 
         myObserver2 = object : DisposableObserver<String>() {
             override fun onNext(t: String) {
@@ -134,9 +148,16 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        compositeDisposable.add(myObserver2)
+//        compositeDisposable.add(myObserver2)
 
-        myObservable.subscribe(myObserver2)
+//        myObservable.subscribe(myObserver2)
+
+        /*
+        * We have already */
+        compositeDisposable.add(
+            myObservable.subscribeWith(myObserver2)
+        )
+
 
     }
 
