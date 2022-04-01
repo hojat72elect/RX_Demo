@@ -3,9 +3,11 @@ package ca.sudbury.hojat.rxdemo
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.observers.DisposableObserver
 import io.reactivex.rxjava3.schedulers.Schedulers
 
@@ -17,11 +19,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var myObservable: Observable<String> // The Observable object
 
     //    private lateinit var myObserver: Observer<String> // The Observer object
-    private lateinit var myObserver: DisposableObserver<String> // It's a customized version of Observer which makes some works easier.
+
+    // It's a customized version of Observer which makes disposing the observer a lot easier.
+    private lateinit var myObserver: DisposableObserver<String>
+    private lateinit var myObserver2: DisposableObserver<String>
 
     private lateinit var textView: TextView
 //    private lateinit var disposable: Disposable
 
+    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,7 +111,32 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+
+        // Adding (subscribing) an Observer to a CompositeDisposable class.
+        compositeDisposable.add(myObserver)
+
         myObservable.subscribe(myObserver)
+
+
+        myObserver2 = object : DisposableObserver<String>() {
+            override fun onNext(t: String) {
+                Log.i(TAG, "onNext() function was invoked")
+                Toast.makeText(applicationContext, t, Toast.LENGTH_LONG).show()
+
+            }
+
+            override fun onError(e: Throwable) {
+                Log.i(TAG, "onError() function was invoked")
+            }
+
+            override fun onComplete() {
+                Log.i(TAG, "onComplete() function was invoked")
+            }
+        }
+
+        compositeDisposable.add(myObserver2)
+
+        myObservable.subscribe(myObserver2)
 
     }
 
@@ -118,6 +149,13 @@ class MainActivity : AppCompatActivity() {
 //        disposable.dispose()
 
         // You can directly dispose a DisposableObserver<T> which is totally different from a normal Observer.
-        myObserver.dispose()
+//        myObserver.dispose()
+
+        // In this case we're disposing all observers manually (can cause problems if you forget to dispose one).
+//        myObserver2.dispose()
+
+        // In just one line of code, all subscriptions are disposed
+        compositeDisposable.clear()
+
     }
 }

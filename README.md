@@ -191,14 +191,19 @@ try to update a UI which is already destroyed. This results in a memory leak and
 In order to avoid such situations, we can use "Disposables" to dispose a subscription when the Observer no longer wants
 to listen to the Observable.
 
-----------------------------------
-
 ### Disposable Observer:
 
 For normal Observers we use the Interface "Observer<T>" but for custom Observers we can also use a class
 named "<a href="http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava3/observers/DisposableObserver.html">
 DisposableObserver<T></a>".
 
+### Composite Disposable:
+
+In RxJava, one Observable can have so many Observers; you can also have numerous observers in one class. In such
+situations, you will have so many observers and remembering to dispose all of them will be a tedious job and might cause
+some errors. The easiest way of handling numerous observers and their disposal in RxJava is to use
+the <a href="http://reactivex.io/RxJava/javadoc/io/reactivex/disposables/CompositeDisposable.html">
+CompositeDisposable</a> class.
 
 ----------------------------------
 
