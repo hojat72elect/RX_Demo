@@ -165,3 +165,46 @@ This Scheduler executes all the given tasks in a first in first out (FIFO) fashi
 <li>Schedulers.from(Executor executor)</li>
 This function creates and returns a customized Scheduler backed by a specific <a href="https://developer.android.com/reference/java/util/concurrent/Executor">executor</a>.
 </ol>
+
+----------------------------------
+
+### How to use Schedulers in a given Android project via Rx libraries?
+
+RxJava has provided a simple way for scheduling work on a desired thread using 2 methods:
+<ol>
+<li>observeOn()</li>
+<li>subscribeOn()</li>
+</ol>
+
+----------------------------------
+
+### Disposable & CompositeDisposable:
+
+Imagine in an Android app that you have created, you're performing the network call to a REST API and then update the
+view according to the data you receive from this network call (and you perform all this scenario with an observer
+pattern via RxJava).
+
+But in this scenario, if a user initiates a view and decides to go back before the completion of the network call, in
+this case, the Activity or Fragment will be destroyed but the "Observer Subscription" will resume working and will even
+try to update a UI which is already destroyed. This results in a memory leak and subsequent app crashes.
+
+In order to avoid such situations, we can use "Disposables" to dispose a subscription when the Observer no longer wants
+to listen to the Observable.
+
+----------------------------------
+
+### Disposable Observer:
+
+
+
+
+----------------------------------
+
+### Further reading:
+
+In creating this project I have used these resources:
+<ol>
+<li><a href="https://www.amazon.ca/Reactive-Programming-RxJava-Asynchronous-Applications/dp/1491931655">Reactive Programming with RxJava by Tomasz Nurkiewicz & Ben Christensen Foreword by Erik Meijer</a></li>
+<li><a href="https://youtu.be/Y9fA80V25co">RxJava Android Tutorial by AppDevNotes</a></li>
+<li></li>
+</ol>
