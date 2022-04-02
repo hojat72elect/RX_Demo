@@ -2,8 +2,6 @@ package ca.sudbury.hojat.rxdemo
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
@@ -15,16 +13,19 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 class MainActivity : AppCompatActivity() {
 
     private val TAG = "RxJavaDemo"
-    private val greeting = "Hello From RxJava" // imagine this is a data stream
-    private lateinit var myObservable: Observable<String> // The Observable object
 
-    //    private lateinit var myObserver: Observer<String> // The Observer object
+
+    private val nums = arrayOf(2, 6, 5, 3, 4, 8, 5, 4, 2, 5, 4)// imagine this is a data stream
+
+    private lateinit var myObservable: Observable<Int> // The Observable object
+
+//        private lateinit var myObserver: Observer<String> // The Observer object
 
     // It's a customized version of Observer which makes disposing the observer a lot easier.
-    private lateinit var myObserver: DisposableObserver<String>
-    private lateinit var myObserver2: DisposableObserver<String>
+    private lateinit var myObserver: DisposableObserver<Int>
+//    private lateinit var myObserver2: DisposableObserver<String>
 
-    private lateinit var textView: TextView
+//    private lateinit var textView: TextView
 //    private lateinit var disposable: Disposable
 
     private val compositeDisposable = CompositeDisposable()
@@ -33,10 +34,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        textView = findViewById(R.id.tv_Greetings)
+//        textView = findViewById(R.id.tv_Greetings)
         // Making an Observable<String> object out of the String we have
         // provided to it.
-        myObservable = Observable.just(greeting)
+        // The "just"
+        myObservable = Observable.fromArray(*nums)
 
         //We'll put our schedulers and operators in between of Observable and Observer (just like how the architecture shows it in README.md)
 //        myObservable.subscribeOn(Schedulers.io()) // choosing the Scheduler
@@ -96,20 +98,20 @@ class MainActivity : AppCompatActivity() {
         * working DisposableObserver<String> which is an abstract class.
         * Pay attention that in this case, we don't have an onSubscribe()
         * between our callbacks (it's because a DisposableObserver doesn't need that).*/
-        myObserver = object : DisposableObserver<String>() {
-            override fun onNext(t: String) {
-                Log.i(TAG, "onNext() function was invoked")
-                textView.text = t
-            }
-
-            override fun onError(e: Throwable) {
-                Log.i(TAG, "onError() function was invoked")
-            }
-
-            override fun onComplete() {
-                Log.i(TAG, "onComplete() function was invoked")
-            }
-        }
+//        myObserver = object : DisposableObserver<String>() {
+//            override fun onNext(t: String) {
+//                Log.i(TAG, "onNext() function was invoked")
+//                textView.text = t
+//            }
+//
+//            override fun onError(e: Throwable) {
+//                Log.i(TAG, "onError() function was invoked")
+//            }
+//
+//            override fun onComplete() {
+//                Log.i(TAG, "onComplete() function was invoked")
+//            }
+//        }
 
 
         // Adding (subscribing) an Observer to a CompositeDisposable class.
@@ -129,24 +131,24 @@ class MainActivity : AppCompatActivity() {
             myObservable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(myObserver)
-        )// so now our CompositeDisposable has a disposable  full-blown observer
+                .subscribeWith(getObserver())
+        ) // so now our CompositeDisposable has a full-blown disposable observer
 
-        myObserver2 = object : DisposableObserver<String>() {
-            override fun onNext(t: String) {
-                Log.i(TAG, "onNext() function was invoked")
-                Toast.makeText(applicationContext, t, Toast.LENGTH_LONG).show()
-
-            }
-
-            override fun onError(e: Throwable) {
-                Log.i(TAG, "onError() function was invoked")
-            }
-
-            override fun onComplete() {
-                Log.i(TAG, "onComplete() function was invoked")
-            }
-        }
+//        myObserver2 = object : DisposableObserver<String>() {
+//            override fun onNext(t: String) {
+//                Log.i(TAG, "onNext() function was invoked")
+//                Toast.makeText(applicationContext, t, Toast.LENGTH_LONG).show()
+//
+//            }
+//
+//            override fun onError(e: Throwable) {
+//                Log.i(TAG, "onError() function was invoked")
+//            }
+//
+//            override fun onComplete() {
+//                Log.i(TAG, "onComplete() function was invoked")
+//            }
+//        }
 
 //        compositeDisposable.add(myObserver2)
 
@@ -154,9 +156,9 @@ class MainActivity : AppCompatActivity() {
 
         /*
         * We have already */
-        compositeDisposable.add(
-            myObservable.subscribeWith(myObserver2)
-        )
+//        compositeDisposable.add(
+//            myObservable.subscribeWith(myObserver2)
+//        )
 
 
     }
@@ -176,7 +178,30 @@ class MainActivity : AppCompatActivity() {
 //        myObserver2.dispose()
 
         // In just one line of code, all subscriptions are disposed
-        compositeDisposable.clear()
+//        compositeDisposable.clear()
 
+    }
+
+    /**
+     * The code for making a disposable observer was taken out to a separate method in order to make everything more concise/modular.
+     */
+    fun getObserver(): DisposableObserver<Int> {
+
+        myObserver = object : DisposableObserver<Int>() {
+            override fun onNext(t: Int) {
+                Log.i(TAG, "onNext() function was invoked - $t")
+
+            }
+
+            override fun onError(e: Throwable) {
+                Log.i(TAG, "onError() function was invoked")
+            }
+
+            override fun onComplete() {
+                Log.i(TAG, "onComplete() function was invoked")
+            }
+        }
+
+        return myObserver
     }
 }

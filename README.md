@@ -85,7 +85,66 @@ Another group of operators is:
 
 <ol>
 <li><a href="https://reactivex.io/documentation/operators/from.html">From</a></li>
+These are various version of "From" operator which are available in RxJava 👇👇
+<img alt="RxJava from operators" src="DocsAsset/RxJava-from.png"  />
+The most commonly used of these operators is "fromArray". As a simple example of using it, have a look at the code below, it's a simple Activity in an Android app:
+
+```
+package ca.sudbury.hojat.rxdemo
+
+import android.os.Bundle
+import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.observers.DisposableObserver
+import io.reactivex.rxjava3.schedulers.Schedulers
+
+class MainActivity : AppCompatActivity() {
+
+    private val TAG = "RxJavaDemo"
+    private val greetings = arrayListOf("Hello A", "Hello B", "Hello C")
+    private lateinit var myObservable: Observable<String>
+    private lateinit var myObserver: DisposableObserver<String>
+    private val compositeDisposable = CompositeDisposable()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        myObservable = Observable.fromArray(greetings) // fromArray operator 
+        compositeDisposable.add(
+            myObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(getObserver())
+        )
+    }
+
+    fun getObserver(): DisposableObserver<String> {
+
+        myObserver = object : DisposableObserver<String>() {
+            override fun onNext(t: ArrayList<String>) {
+                Log.i(TAG, "onNext() function was invoked - $t")
+            }
+
+            override fun onError(e: Throwable) {
+                Log.i(TAG, "onError() function was invoked")
+            }
+
+            override fun onComplete() {
+                Log.i(TAG, "onComplete() function was invoked")
+            }
+        }
+
+        return myObserver
+    }
+}
+```
+
 <li><a href="https://reactivex.io/documentation/operators/just.html">Just</a></li>
+This operator "just" emits the same values provided to it in its arguments. It simply creates an Observable which emits the item given to this operator.<br/><br/>For example, if you give an array of items to a "just" operator, the whole iterable will be emitted as a single item (it won't emit each single item of the iterable independently).
 <li><a href="https://reactivex.io/documentation/operators/range.html">Range</a></li>
 </ol>
 we also have: 
