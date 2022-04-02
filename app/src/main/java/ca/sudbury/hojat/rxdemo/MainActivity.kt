@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         // Making an Observable<String> object out of the String we have
         // provided to it.
         // The "just"
-        myObservable = Observable.fromArray(*nums)
+        myObservable = Observable.range(1, 15)
 
         //We'll put our schedulers and operators in between of Observable and Observer (just like how the architecture shows it in README.md)
 //        myObservable.subscribeOn(Schedulers.io()) // choosing the Scheduler

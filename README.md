@@ -146,6 +146,10 @@ class MainActivity : AppCompatActivity() {
 <li><a href="https://reactivex.io/documentation/operators/just.html">Just</a></li>
 This operator "just" emits the same values provided to it in its arguments. It simply creates an Observable which emits the item given to this operator.<br/><br/>For example, if you give an array of items to a "just" operator, the whole iterable will be emitted as a single item (it won't emit each single item of the iterable independently).
 <li><a href="https://reactivex.io/documentation/operators/range.html">Range</a></li>
+As the name suggests, this operator creates an Observable which emits a particular range of integers. These are the current "Range" operators we have in RxJava 👇👇<br/>
+
+<img alt="range-operator-RxJava" src="DocsAsset/range-operator-RxJava.png"  />
+
 </ol>
 we also have: 
 
